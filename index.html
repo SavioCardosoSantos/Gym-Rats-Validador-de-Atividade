@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1, viewport-fit=cover" />
   <title>Gym Rats — Aprovação de Corrida/Caminhada</title>
   <style>
     :root{
@@ -11,30 +11,28 @@
       --card2: rgba(255,255,255,0.12);
       --text: rgba(255,255,255,0.92);
       --muted: rgba(255,255,255,0.65);
-      --good1:#16a34a;
-      --good2:#22c55e;
-      --bad1:#b91c1c;
-      --bad2:#ef4444;
       --accent:#7c3aed;
       --shadow: 0 20px 60px rgba(0,0,0,0.45);
       --radius: 22px;
     }
 
     *{ box-sizing:border-box; }
-    html,body{ height:100%; }
+    html{ height:100%; }
     body{
       margin:0;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      color:var(--text);
+
+      /* ✅ mobile friendly full-height without blocking scroll */
+      min-height: 100svh;
+      padding: max(18px, env(safe-area-inset-top)) 16px max(18px, env(safe-area-inset-bottom));
+      overflow-x:hidden;
+      overflow-y:auto;
+
       background: radial-gradient(1200px 700px at 20% 0%, rgba(124,58,237,0.25), transparent 60%),
                   radial-gradient(900px 600px at 90% 20%, rgba(34,197,94,0.20), transparent 55%),
                   radial-gradient(1100px 700px at 50% 100%, rgba(239,68,68,0.18), transparent 55%),
                   var(--bg);
-      color:var(--text);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:24px;
-      overflow:hidden;
       transition: background 450ms ease;
     }
 
@@ -51,15 +49,18 @@
                   #160606;
     }
 
+    /* ✅ wrapper now allows natural document flow */
     .wrap{
       width:min(920px, 100%);
+      margin: 0 auto;         /* center horizontally */
       display:grid;
       grid-template-columns: 1.1fr 0.9fr;
       gap:18px;
-      align-items:stretch;
+      align-items:start;
     }
 
-    @media (max-width: 840px){
+    /* ✅ break earlier for phones */
+    @media (max-width: 860px){
       .wrap{ grid-template-columns: 1fr; }
     }
 
@@ -68,10 +69,13 @@
       border:1px solid rgba(255,255,255,0.12);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
-      padding:22px;
+      padding:18px;
       position:relative;
       overflow:hidden;
       backdrop-filter: blur(10px);
+    }
+    @media (max-width: 420px){
+      .card{ padding:16px; border-radius:18px; }
     }
 
     .glow{
@@ -87,13 +91,14 @@
 
     h1{
       margin:0 0 6px 0;
-      font-size: clamp(22px, 2.8vw, 32px);
+      font-size: clamp(22px, 5.2vw, 34px);
       letter-spacing:-0.02em;
     }
     .subtitle{
-      margin:0 0 18px 0;
+      margin:0 0 16px 0;
       color:var(--muted);
       line-height:1.35;
+      font-size: 14px;
     }
 
     .grid{
@@ -101,7 +106,7 @@
       grid-template-columns: 1fr 1fr;
       gap:12px;
     }
-    @media (max-width: 520px){
+    @media (max-width: 540px){
       .grid{ grid-template-columns: 1fr; }
     }
 
@@ -111,11 +116,7 @@
       color:var(--muted);
       margin:0 0 8px;
     }
-    .field{
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-    }
+    .field{ display:flex; flex-direction:column; gap:6px; }
 
     input{
       width:100%;
@@ -125,7 +126,7 @@
       background: rgba(0,0,0,0.28);
       color:var(--text);
       outline:none;
-      font-size:16px;
+      font-size:16px; /* ✅ keep 16px to avoid iOS zoom */
       transition: transform 120ms ease, border-color 250ms ease;
     }
     input:focus{
@@ -135,13 +136,13 @@
 
     .actions{
       display:flex;
-      gap:12px;
+      gap:10px;
       margin-top:14px;
       flex-wrap:wrap;
     }
     button{
       border:0;
-      padding:12px 16px;
+      padding:12px 14px;
       border-radius:14px;
       font-weight:700;
       font-size:15px;
@@ -167,11 +168,10 @@
       flex-direction:column;
       gap:14px;
       height:100%;
-      justify-content:space-between;
     }
 
     .status{
-      padding:18px;
+      padding:16px;
       border-radius:18px;
       border:1px solid rgba(255,255,255,0.14);
       background: rgba(0,0,0,0.26);
@@ -194,7 +194,7 @@
     }
 
     .big{
-      font-size: clamp(26px, 4vw, 40px);
+      font-size: clamp(24px, 6vw, 40px);
       font-weight: 900;
       letter-spacing:-0.03em;
       margin:0;
@@ -213,7 +213,6 @@
       border-radius:999px;
       overflow:hidden;
       margin-top:14px;
-      position:relative;
     }
     .bar{
       height:100%;
@@ -233,7 +232,7 @@
     }
 
     .rules{
-      padding:16px;
+      padding:14px;
       border-radius:18px;
       border:1px solid rgba(255,255,255,0.12);
       background: rgba(0,0,0,0.20);
@@ -249,7 +248,6 @@
       border:1px solid rgba(255,255,255,0.12);
     }
 
-    /* Shake effect */
     @keyframes shake {
       0% { transform: translate(0,0) rotate(0deg); }
       10% { transform: translate(-6px, 2px) rotate(-0.6deg); }
@@ -263,11 +261,8 @@
       90% { transform: translate(-2px, 1px) rotate(-0.2deg); }
       100% { transform: translate(0,0) rotate(0deg); }
     }
-    .shake{
-      animation: shake 520ms ease-in-out;
-    }
+    .shake{ animation: shake 520ms ease-in-out; }
 
-    /* Confetti canvas sits on top */
     canvas#confetti{
       position:fixed;
       inset:0;
@@ -300,7 +295,7 @@
       <h1>Gym Rats 🐀💨 — Validador de Atividade</h1>
       <p class="subtitle">
         Digite a <b>distância (km)</b> e o <b>tempo total (min)</b>.
-        A regra usa o seu padrão: <b>pace base 8:00</b> (2km em 16min) e vai ficando mais permissiva conforme aumenta a distância.
+        Regra: <b>pace base 8:00</b> (2km em 16min) e vai ficando mais permissiva conforme aumenta a distância.
       </p>
 
       <div class="grid">
@@ -355,13 +350,11 @@
   </div>
 
   <script>
-    // ======= Fórmula =======
     function tMax(distanceKm){
       if (distanceKm <= 2) return 8 * distanceKm;
       return 16 * Math.pow(distanceKm / 2, 1.25);
     }
 
-    // ======= UI helpers =======
     const $ = (id) => document.getElementById(id);
 
     const distEl = $("dist");
@@ -377,9 +370,8 @@
     const leftNote = $("leftNote");
     const rightNote = $("rightNote");
     const panel = $("panel");
-    const statusBox = $("statusBox");
 
-    function setTheme(state){ // 'good' | 'bad' | 'neutral'
+    function setTheme(state){
       document.body.classList.remove("good","bad");
       pill.classList.remove("badge-good","badge-bad");
 
@@ -394,12 +386,11 @@
 
     function shake(){
       panel.classList.remove("shake");
-      void panel.offsetWidth; // restart animation
+      void panel.offsetWidth;
       panel.classList.add("shake");
     }
 
     function formatMin(n){
-      // shows with 1 decimal if needed
       const rounded = Math.round(n*10)/10;
       return (Number.isInteger(rounded) ? rounded.toString() : rounded.toFixed(1));
     }
@@ -420,8 +411,8 @@
       }
 
       const max = tMax(d);
-      const ratio = t / max; // <=1 aprovado
-      const pct = Math.max(0, Math.min(100, (1/ratio) * 100)); // higher is better
+      const ratio = t / max;
+      const pct = Math.max(0, Math.min(100, (1/ratio) * 100));
       bar.style.width = Math.max(3, Math.min(100, pct)) + "%";
 
       leftNote.textContent = `Seu tempo: ${formatMin(t)} min`;
@@ -432,21 +423,19 @@
         pill.textContent = "✅ APROVADO";
         statusText.textContent = "Mandou bem! 🎉";
         const sobra = max - t;
-        metaText.textContent =
-          `Dentro do limite por ${formatMin(sobra)} min. Continua assim, rato de academia. 🐀💪`;
+        metaText.textContent = `Dentro do limite por ${formatMin(sobra)} min. Continua assim, rato de academia. 🐀💪`;
         popConfetti();
       }else{
         setTheme("bad");
         pill.textContent = "⛔ REPROVADO";
         statusText.textContent = "Hoje não deu 😵‍💫";
         const falta = t - max;
-        metaText.textContent =
-          `Passou do limite por ${formatMin(falta)} min. Bora ajustar o ritmo e tentar de novo!`;
+        metaText.textContent = `Passou do limite por ${formatMin(falta)} min. Bora ajustar o ritmo e tentar de novo!`;
         shake();
       }
     }
 
-    // ======= Confetti (sem biblioteca) =======
+    // Confetti
     const canvas = $("confetti");
     const ctx = canvas.getContext("2d");
     let confetti = [];
@@ -461,10 +450,9 @@
     resize();
 
     function popConfetti(){
-      // spawn burst
       const count = 140;
-      const originX = window.innerWidth * (0.55);
-      const originY = window.innerHeight * (0.20);
+      const originX = window.innerWidth * 0.55;
+      const originY = window.innerHeight * 0.20;
 
       for(let i=0;i<count;i++){
         confetti.push({
@@ -478,11 +466,9 @@
           vr: (Math.random()*0.2 - 0.1),
           life: 120 + Math.random()*40,
           shape: Math.random() < 0.6 ? "rect" : "circle",
-          // Use HSL for variety without hardcoding "a color theme"
           hue: Math.floor(Math.random()*360)
         });
       }
-
       if(!animId) animateConfetti();
     }
 
@@ -514,7 +500,6 @@
           ctx.arc(0,0,p.size/2,0,Math.PI*2);
           ctx.fill();
         }
-
         ctx.restore();
       }
 
@@ -527,15 +512,14 @@
       }
     }
 
-    // ======= Buttons =======
-    calcBtn.addEventListener("click", calc);
-
-    demoBtn.addEventListener("click", () => {
+    // Buttons
+    $("calc").addEventListener("click", calc);
+    $("demo").addEventListener("click", () => {
       const demos = [
-        {d:2, t:16},   // aprovado (pace 8)
-        {d:2, t:20},   // reprovado (pace 10)
-        {d:5, t:50},   // perto do limite
-        {d:5, t:60},   // reprovado
+        {d:2, t:16},
+        {d:2, t:20},
+        {d:5, t:50},
+        {d:5, t:60},
       ];
       const pick = demos[Math.floor(Math.random()*demos.length)];
       distEl.value = pick.d;
@@ -543,7 +527,7 @@
       calc();
     });
 
-    resetBtn.addEventListener("click", () => {
+    $("reset").addEventListener("click", () => {
       distEl.value = "";
       timeEl.value = "";
       setTheme("neutral");
@@ -554,10 +538,7 @@
       leftNote.textContent = "Seu tempo: —";
       rightNote.textContent = "Máximo: —";
       confetti = [];
-      if(animId){
-        cancelAnimationFrame(animId);
-        animId = null;
-      }
+      if(animId){ cancelAnimationFrame(animId); animId = null; }
       ctx.clearRect(0,0,canvas.width,canvas.height);
     });
 
