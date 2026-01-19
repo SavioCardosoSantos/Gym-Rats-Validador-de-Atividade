@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Gym Rats — Aprovação de Corrida/Caminhada</title>
+  <style>
+    :root{
+      --bg: #0b1020;
+      --card: rgba(255,255,255,0.08);
+      --card2: rgba(255,255,255,0.12);
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.65);
+      --good1:#16a34a;
+      --good2:#22c55e;
+      --bad1:#b91c1c;
+      --bad2:#ef4444;
+      --accent:#7c3aed;
+      --shadow: 0 20px 60px rgba(0,0,0,0.45);
+      --radius: 22px;
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background: radial-gradient(1200px 700px at 20% 0%, rgba(124,58,237,0.25), transparent 60%),
+                  radial-gradient(900px 600px at 90% 20%, rgba(34,197,94,0.20), transparent 55%),
+                  radial-gradient(1100px 700px at 50% 100%, rgba(239,68,68,0.18), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+      overflow:hidden;
+      transition: background 450ms ease;
+    }
+
+    body.good{
+      background: radial-gradient(1200px 700px at 20% 0%, rgba(34,197,94,0.35), transparent 60%),
+                  radial-gradient(900px 600px at 90% 20%, rgba(16,163,74,0.30), transparent 55%),
+                  radial-gradient(1100px 700px at 50% 100%, rgba(34,197,94,0.22), transparent 55%),
+                  #06150d;
+    }
+    body.bad{
+      background: radial-gradient(1200px 700px at 20% 0%, rgba(239,68,68,0.35), transparent 60%),
+                  radial-gradient(900px 600px at 90% 20%, rgba(185,28,28,0.30), transparent 55%),
+                  radial-gradient(1100px 700px at 50% 100%, rgba(239,68,68,0.22), transparent 55%),
+                  #160606;
+    }
+
+    .wrap{
+      width:min(920px, 100%);
+      display:grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap:18px;
+      align-items:stretch;
+    }
+
+    @media (max-width: 840px){
+      .wrap{ grid-template-columns: 1fr; }
+    }
+
+    .card{
+      background: linear-gradient(180deg, var(--card2), var(--card));
+      border:1px solid rgba(255,255,255,0.12);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding:22px;
+      position:relative;
+      overflow:hidden;
+      backdrop-filter: blur(10px);
+    }
+
+    .glow{
+      position:absolute;
+      inset:-80px;
+      background: radial-gradient(circle at 30% 30%, rgba(124,58,237,0.25), transparent 45%),
+                  radial-gradient(circle at 70% 40%, rgba(34,197,94,0.18), transparent 45%),
+                  radial-gradient(circle at 50% 80%, rgba(239,68,68,0.16), transparent 50%);
+      filter: blur(18px);
+      pointer-events:none;
+      opacity:0.8;
+    }
+
+    h1{
+      margin:0 0 6px 0;
+      font-size: clamp(22px, 2.8vw, 32px);
+      letter-spacing:-0.02em;
+    }
+    .subtitle{
+      margin:0 0 18px 0;
+      color:var(--muted);
+      line-height:1.35;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+    }
+    @media (max-width: 520px){
+      .grid{ grid-template-columns: 1fr; }
+    }
+
+    label{
+      display:block;
+      font-size:13px;
+      color:var(--muted);
+      margin:0 0 8px;
+    }
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+
+    input{
+      width:100%;
+      padding:14px 14px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,0.16);
+      background: rgba(0,0,0,0.28);
+      color:var(--text);
+      outline:none;
+      font-size:16px;
+      transition: transform 120ms ease, border-color 250ms ease;
+    }
+    input:focus{
+      border-color: rgba(124,58,237,0.55);
+      box-shadow: 0 0 0 4px rgba(124,58,237,0.18);
+    }
+
+    .actions{
+      display:flex;
+      gap:12px;
+      margin-top:14px;
+      flex-wrap:wrap;
+    }
+    button{
+      border:0;
+      padding:12px 16px;
+      border-radius:14px;
+      font-weight:700;
+      font-size:15px;
+      cursor:pointer;
+      color: #0b1020;
+      background: linear-gradient(90deg, rgba(124,58,237,0.95), rgba(167,139,250,0.95));
+      box-shadow: 0 12px 30px rgba(124,58,237,0.28);
+      transition: transform 120ms ease, filter 200ms ease;
+      user-select:none;
+    }
+    button:hover{ transform: translateY(-1px); filter: brightness(1.08); }
+    button:active{ transform: translateY(1px) scale(0.99); }
+
+    .ghost{
+      background: rgba(255,255,255,0.10);
+      color:var(--text);
+      border:1px solid rgba(255,255,255,0.14);
+      box-shadow:none;
+    }
+
+    .result{
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      height:100%;
+      justify-content:space-between;
+    }
+
+    .status{
+      padding:18px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,0.14);
+      background: rgba(0,0,0,0.26);
+      position:relative;
+      overflow:hidden;
+      min-height: 170px;
+    }
+
+    .pill{
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      padding:8px 12px;
+      border-radius:999px;
+      font-size:13px;
+      color:rgba(255,255,255,0.85);
+      background: rgba(255,255,255,0.10);
+      border:1px solid rgba(255,255,255,0.14);
+      margin-bottom:12px;
+    }
+
+    .big{
+      font-size: clamp(26px, 4vw, 40px);
+      font-weight: 900;
+      letter-spacing:-0.03em;
+      margin:0;
+    }
+    .meta{
+      margin:8px 0 0 0;
+      color:var(--muted);
+      line-height:1.4;
+      font-size:14px;
+    }
+
+    .meter{
+      height: 14px;
+      background: rgba(255,255,255,0.10);
+      border:1px solid rgba(255,255,255,0.14);
+      border-radius:999px;
+      overflow:hidden;
+      margin-top:14px;
+      position:relative;
+    }
+    .bar{
+      height:100%;
+      width:0%;
+      border-radius:999px;
+      background: linear-gradient(90deg, rgba(34,197,94,0.9), rgba(124,58,237,0.9));
+      transition: width 650ms cubic-bezier(.2,.8,.2,1);
+    }
+    .meter-note{
+      margin-top:10px;
+      font-size:13px;
+      color:var(--muted);
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .rules{
+      padding:16px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,0.12);
+      background: rgba(0,0,0,0.20);
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.45;
+    }
+    .rules code{
+      color:rgba(255,255,255,0.88);
+      background: rgba(255,255,255,0.10);
+      padding:2px 6px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,0.12);
+    }
+
+    /* Shake effect */
+    @keyframes shake {
+      0% { transform: translate(0,0) rotate(0deg); }
+      10% { transform: translate(-6px, 2px) rotate(-0.6deg); }
+      20% { transform: translate(5px, -3px) rotate(0.7deg); }
+      30% { transform: translate(-5px, -2px) rotate(-0.4deg); }
+      40% { transform: translate(6px, 3px) rotate(0.5deg); }
+      50% { transform: translate(-4px, 2px) rotate(-0.5deg); }
+      60% { transform: translate(4px, -2px) rotate(0.4deg); }
+      70% { transform: translate(-3px, 1px) rotate(-0.3deg); }
+      80% { transform: translate(3px, -1px) rotate(0.3deg); }
+      90% { transform: translate(-2px, 1px) rotate(-0.2deg); }
+      100% { transform: translate(0,0) rotate(0deg); }
+    }
+    .shake{
+      animation: shake 520ms ease-in-out;
+    }
+
+    /* Confetti canvas sits on top */
+    canvas#confetti{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      z-index:9999;
+    }
+
+    .badge-good{
+      background: rgba(34,197,94,0.14);
+      border-color: rgba(34,197,94,0.25);
+    }
+    .badge-bad{
+      background: rgba(239,68,68,0.14);
+      border-color: rgba(239,68,68,0.25);
+    }
+
+    .hint{
+      margin-top:10px;
+      font-size:12px;
+      color:rgba(255,255,255,0.55);
+    }
+  </style>
+</head>
+<body>
+  <canvas id="confetti"></canvas>
+
+  <div class="wrap">
+    <section class="card">
+      <div class="glow"></div>
+      <h1>Gym Rats 🐀💨 — Validador de Atividade</h1>
+      <p class="subtitle">
+        Digite a <b>distância (km)</b> e o <b>tempo total (min)</b>.
+        A regra usa o seu padrão: <b>pace base 8:00</b> (2km em 16min) e vai ficando mais permissiva conforme aumenta a distância.
+      </p>
+
+      <div class="grid">
+        <div class="field">
+          <label for="dist">Distância (km)</label>
+          <input id="dist" inputmode="decimal" placeholder="Ex.: 2" />
+          <div class="hint">Dica: pode ser 2.5, 3, 5…</div>
+        </div>
+
+        <div class="field">
+          <label for="time">Tempo total (min)</label>
+          <input id="time" inputmode="decimal" placeholder="Ex.: 16" />
+          <div class="hint">Tempo em minutos (ex.: 1h = 60)</div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="calc">Calcular</button>
+        <button id="demo" class="ghost">Exemplos</button>
+        <button id="reset" class="ghost">Reset</button>
+      </div>
+    </section>
+
+    <aside class="card result" id="panel">
+      <div class="glow"></div>
+
+      <div class="status" id="statusBox">
+        <div class="pill" id="pill">⏱️ Aguardando dados…</div>
+        <p class="big" id="statusText">Pronto pra correr?</p>
+        <p class="meta" id="metaText">
+          Preencha os campos e clique em <b>Calcular</b>.
+        </p>
+
+        <div class="meter" aria-label="medidor">
+          <div class="bar" id="bar"></div>
+        </div>
+        <div class="meter-note">
+          <span id="leftNote">Seu tempo: —</span>
+          <span id="rightNote">Máximo: —</span>
+        </div>
+      </div>
+
+      <div class="rules">
+        <div><b>Regra usada:</b></div>
+        <div style="margin-top:8px">
+          Se <code>d ≤ 2</code> → <code>Tmax = 8 · d</code><br/>
+          Se <code>d &gt; 2</code> → <code>Tmax = 16 · (d/2)^1.25</code><br/>
+          Aprova se <code>T ≤ Tmax</code>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    // ======= Fórmula =======
+    function tMax(distanceKm){
+      if (distanceKm <= 2) return 8 * distanceKm;
+      return 16 * Math.pow(distanceKm / 2, 1.25);
+    }
+
+    // ======= UI helpers =======
+    const $ = (id) => document.getElementById(id);
+
+    const distEl = $("dist");
+    const timeEl = $("time");
+    const calcBtn = $("calc");
+    const demoBtn = $("demo");
+    const resetBtn = $("reset");
+
+    const pill = $("pill");
+    const statusText = $("statusText");
+    const metaText = $("metaText");
+    const bar = $("bar");
+    const leftNote = $("leftNote");
+    const rightNote = $("rightNote");
+    const panel = $("panel");
+    const statusBox = $("statusBox");
+
+    function setTheme(state){ // 'good' | 'bad' | 'neutral'
+      document.body.classList.remove("good","bad");
+      pill.classList.remove("badge-good","badge-bad");
+
+      if(state === "good"){
+        document.body.classList.add("good");
+        pill.classList.add("badge-good");
+      } else if(state === "bad"){
+        document.body.classList.add("bad");
+        pill.classList.add("badge-bad");
+      }
+    }
+
+    function shake(){
+      panel.classList.remove("shake");
+      void panel.offsetWidth; // restart animation
+      panel.classList.add("shake");
+    }
+
+    function formatMin(n){
+      // shows with 1 decimal if needed
+      const rounded = Math.round(n*10)/10;
+      return (Number.isInteger(rounded) ? rounded.toString() : rounded.toFixed(1));
+    }
+
+    function calc(){
+      const d = parseFloat(String(distEl.value).replace(",", "."));
+      const t = parseFloat(String(timeEl.value).replace(",", "."));
+
+      if(!isFinite(d) || !isFinite(t) || d <= 0 || t <= 0){
+        setTheme("neutral");
+        pill.textContent = "⚠️ Ops…";
+        statusText.textContent = "Preencha valores válidos";
+        metaText.textContent = "Distância e tempo precisam ser números maiores que zero.";
+        bar.style.width = "0%";
+        leftNote.textContent = "Seu tempo: —";
+        rightNote.textContent = "Máximo: —";
+        return;
+      }
+
+      const max = tMax(d);
+      const ratio = t / max; // <=1 aprovado
+      const pct = Math.max(0, Math.min(100, (1/ratio) * 100)); // higher is better
+      bar.style.width = Math.max(3, Math.min(100, pct)) + "%";
+
+      leftNote.textContent = `Seu tempo: ${formatMin(t)} min`;
+      rightNote.textContent = `Máximo: ${formatMin(max)} min`;
+
+      if(t <= max){
+        setTheme("good");
+        pill.textContent = "✅ APROVADO";
+        statusText.textContent = "Mandou bem! 🎉";
+        const sobra = max - t;
+        metaText.textContent =
+          `Dentro do limite por ${formatMin(sobra)} min. Continua assim, rato de academia. 🐀💪`;
+        popConfetti();
+      }else{
+        setTheme("bad");
+        pill.textContent = "⛔ REPROVADO";
+        statusText.textContent = "Hoje não deu 😵‍💫";
+        const falta = t - max;
+        metaText.textContent =
+          `Passou do limite por ${formatMin(falta)} min. Bora ajustar o ritmo e tentar de novo!`;
+        shake();
+      }
+    }
+
+    // ======= Confetti (sem biblioteca) =======
+    const canvas = $("confetti");
+    const ctx = canvas.getContext("2d");
+    let confetti = [];
+    let animId = null;
+
+    function resize(){
+      canvas.width = window.innerWidth * devicePixelRatio;
+      canvas.height = window.innerHeight * devicePixelRatio;
+      ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+    }
+    window.addEventListener("resize", resize);
+    resize();
+
+    function popConfetti(){
+      // spawn burst
+      const count = 140;
+      const originX = window.innerWidth * (0.55);
+      const originY = window.innerHeight * (0.20);
+
+      for(let i=0;i<count;i++){
+        confetti.push({
+          x: originX,
+          y: originY,
+          vx: (Math.random()*10 - 5),
+          vy: (Math.random()*-10 - 6),
+          g: 0.25 + Math.random()*0.18,
+          size: 4 + Math.random()*5,
+          rot: Math.random()*Math.PI,
+          vr: (Math.random()*0.2 - 0.1),
+          life: 120 + Math.random()*40,
+          shape: Math.random() < 0.6 ? "rect" : "circle",
+          // Use HSL for variety without hardcoding "a color theme"
+          hue: Math.floor(Math.random()*360)
+        });
+      }
+
+      if(!animId) animateConfetti();
+    }
+
+    function animateConfetti(){
+      animId = requestAnimationFrame(animateConfetti);
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+
+      confetti = confetti.filter(p => p.life > 0);
+
+      for(const p of confetti){
+        p.life -= 1;
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += p.g;
+        p.rot += p.vr;
+
+        const alpha = Math.max(0, Math.min(1, p.life/140));
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = `hsl(${p.hue} 90% 60%)`;
+
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
+
+        if(p.shape === "rect"){
+          ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size*0.6);
+        }else{
+          ctx.beginPath();
+          ctx.arc(0,0,p.size/2,0,Math.PI*2);
+          ctx.fill();
+        }
+
+        ctx.restore();
+      }
+
+      ctx.globalAlpha = 1;
+
+      if(confetti.length === 0){
+        cancelAnimationFrame(animId);
+        animId = null;
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+      }
+    }
+
+    // ======= Buttons =======
+    calcBtn.addEventListener("click", calc);
+
+    demoBtn.addEventListener("click", () => {
+      const demos = [
+        {d:2, t:16},   // aprovado (pace 8)
+        {d:2, t:20},   // reprovado (pace 10)
+        {d:5, t:50},   // perto do limite
+        {d:5, t:60},   // reprovado
+      ];
+      const pick = demos[Math.floor(Math.random()*demos.length)];
+      distEl.value = pick.d;
+      timeEl.value = pick.t;
+      calc();
+    });
+
+    resetBtn.addEventListener("click", () => {
+      distEl.value = "";
+      timeEl.value = "";
+      setTheme("neutral");
+      pill.textContent = "⏱️ Aguardando dados…";
+      statusText.textContent = "Pronto pra correr?";
+      metaText.textContent = "Preencha os campos e clique em Calcular.";
+      bar.style.width = "0%";
+      leftNote.textContent = "Seu tempo: —";
+      rightNote.textContent = "Máximo: —";
+      confetti = [];
+      if(animId){
+        cancelAnimationFrame(animId);
+        animId = null;
+      }
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+    });
+
+    // Enter to calculate
+    [distEl, timeEl].forEach(el => el.addEventListener("keydown", (e) => {
+      if(e.key === "Enter") calc();
+    }));
+  </script>
+</body>
+</html>
